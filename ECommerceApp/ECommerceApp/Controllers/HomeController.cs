@@ -6,10 +6,27 @@ namespace ECommerceApp.Controllers
     [ApiController]
     public class HomeController : ControllerBase
     {
+        private readonly ILogger<HomeController> logger;
+
+        public HomeController(ILogger<HomeController> _logger)
+        {
+            this.logger = _logger;
+        }
+
         [HttpGet("GetInfo")]
         public IActionResult GetInfo()
         {
-            return Ok("Hello world");
+            this.logger.LogInformation("Handling GetInfo request");
+
+            try
+            {
+                return Ok("Information retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Error occurred while processing GetInfo request");
+                return StatusCode(500, "An error occurred.");
+            }
         }
     }
 }
