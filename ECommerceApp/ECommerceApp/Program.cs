@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Text.Json;
 using ECommerceApp.DAL.Data;
 using ECommerceApp.Business.Helper;
+using Serilog;
+using Serilog.Exceptions;
 
 namespace E_commerce_Web_Api
 {
@@ -10,7 +12,15 @@ namespace E_commerce_Web_Api
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.File("Logs/log-information.txt", restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
+                .WriteTo.File("Logs/log-errors.txt", restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error)
+                .Enrich.WithExceptionDetails() 
+                .CreateLogger();
+
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Host.UseSerilog();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -19,7 +29,7 @@ namespace E_commerce_Web_Api
                 options.UseSqlServer(connectionString));
 
             builder.Services.AddHealthChecks()
-                .AddDbContextCheck<ApplicationDbContext>(); 
+                .AddDbContextCheck<ApplicationDbContext>();
 
             builder.Services.AddControllers();
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
