@@ -5,6 +5,7 @@ using ECommerceApp.DAL.Data;
 using ECommerceApp.Business.Helper;
 using Serilog;
 using Serilog.Exceptions;
+using E_commerce_Web_Api.Middleware;
 
 namespace E_commerce_Web_Api
 {
@@ -46,6 +47,8 @@ namespace E_commerce_Web_Api
 
             app.UseHttpsRedirection();
             app.UseAuthorization();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.MapHealthChecks("/health", new HealthCheckOptions
             {
