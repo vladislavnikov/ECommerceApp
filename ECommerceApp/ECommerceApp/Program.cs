@@ -6,6 +6,8 @@ using ECommerceApp.Business.Helper;
 using Serilog;
 using Serilog.Exceptions;
 using E_commerce_Web_Api.Middleware;
+using ECommerceApp.DAL.Data.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace E_commerce_Web_Api
 {
@@ -30,6 +32,16 @@ namespace E_commerce_Web_Api
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 6;
+                options.SignIn.RequireConfirmedEmail = true;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
 
             builder.Services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
