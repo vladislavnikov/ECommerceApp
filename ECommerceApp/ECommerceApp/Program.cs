@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks; 
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Text.Json;
 using ECommerceApp.DAL.Data;
 using ECommerceApp.Business.Helper;
@@ -14,10 +14,12 @@ namespace E_commerce_Web_Api
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.File("Logs/log-information.txt", restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
-                .WriteTo.File("Logs/log-errors.txt", restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error)
-                .Enrich.WithExceptionDetails() 
-                .CreateLogger();
+               .ReadFrom.Configuration(new ConfigurationBuilder()
+                   .SetBasePath(Directory.GetCurrentDirectory())
+                   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                   .Build())
+               .Enrich.WithExceptionDetails()
+               .CreateLogger();
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +41,8 @@ namespace E_commerce_Web_Api
 
             var app = builder.Build();
 
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -47,8 +51,6 @@ namespace E_commerce_Web_Api
 
             app.UseHttpsRedirection();
             app.UseAuthorization();
-
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.MapHealthChecks("/health", new HealthCheckOptions
             {
