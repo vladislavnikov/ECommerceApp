@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks; 
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Text.Json;
 using ECommerceApp.DAL.Data;
 using ECommerceApp.Business.Helper;
+using Serilog;
+using Serilog.Exceptions;
+using E_commerce_Web_Api.Middleware;
 
 namespace E_commerce_Web_Api
 {
@@ -10,7 +13,17 @@ namespace E_commerce_Web_Api
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+               .ReadFrom.Configuration(new ConfigurationBuilder()
+                   .SetBasePath(Directory.GetCurrentDirectory())
+                   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                   .Build())
+               .Enrich.WithExceptionDetails()
+               .CreateLogger();
+
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Host.UseSerilog();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -19,7 +32,7 @@ namespace E_commerce_Web_Api
                 options.UseSqlServer(connectionString));
 
             builder.Services.AddHealthChecks()
-                .AddDbContextCheck<ApplicationDbContext>(); 
+                .AddDbContextCheck<ApplicationDbContext>();
 
             builder.Services.AddControllers();
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
@@ -27,6 +40,8 @@ namespace E_commerce_Web_Api
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             if (app.Environment.IsDevelopment())
             {
