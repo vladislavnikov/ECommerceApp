@@ -35,9 +35,6 @@ namespace ECommerceApp.Controllers
         [HttpPost("signIn")]
         public async Task<IActionResult> SignIn([FromBody] SignInRequestModel model)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
@@ -49,9 +46,10 @@ namespace ECommerceApp.Controllers
                 var token = _jwtService.GenerateJwtToken(user);
                 return Ok(new { Token = token });
             }
-
             return Unauthorized();
         }
+
+
 
         [AllowAnonymous]
         [HttpPost("signUp")]
