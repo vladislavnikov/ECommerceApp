@@ -9,7 +9,7 @@ namespace ECommerceApp.Business.DTOs
 
         [Required]
         [MinLength(6)]
-        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$", ErrorMessage = "Password must contain letters and numbers.")]
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*[^A-Za-z\d]).{6,}$", ErrorMessage = "Password must contain at least one letter and one non-alphabetic character.")]
         public string Password { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerceApp.Controllers
 {
@@ -13,7 +14,8 @@ namespace ECommerceApp.Controllers
             this.logger = _logger;
         }
 
-        [HttpGet("GetInfo")]
+        [Authorize(Roles = "Admin")]
+        [HttpGet("getInfo")]
         public IActionResult GetInfo()
         {
             this.logger.LogInformation("Handling GetInfo request");

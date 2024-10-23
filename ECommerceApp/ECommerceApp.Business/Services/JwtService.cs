@@ -18,7 +18,7 @@ namespace ECommerceApp.Business.Services
         public string GenerateJwtToken(ApplicationUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(this.configuration["Jwt:Key"]);
+            var key = Encoding.ASCII.GetBytes(this.configuration["JwtSettings:Key"]);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]

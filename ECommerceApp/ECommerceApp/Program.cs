@@ -1,31 +1,31 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Text.Json;
-using ECommerceApp.DAL.Data;
+using System.Text.Json.Serialization;
 using ECommerceApp.Business.Helper;
 using Serilog;
 using Serilog.Exceptions;
 using E_commerce_Web_Api.Middleware;
-using ECommerceApp.DAL.Data.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
 using System.Text;
+using ECommerceApp.DAL.Data.Models;
 using ECommerceApp.Business.Services;
 
 namespace E_commerce_Web_Api
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-               .ReadFrom.Configuration(new ConfigurationBuilder()
-                   .SetBasePath(Directory.GetCurrentDirectory())
-                   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                   .Build())
-               .Enrich.WithExceptionDetails()
-               .CreateLogger();
+                .ReadFrom.Configuration(new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .Build())
+                .Enrich.WithExceptionDetails()
+                .CreateLogger();
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -37,28 +37,11 @@ namespace E_commerce_Web_Api
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredLength = 6;
-            })
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-
-            var jwtSettings = builder.Configuration.GetSection("Jwt");
-            var jwtKey = jwtSettings["Key"]; 
-            var jwtIssuer = jwtSettings["Issuer"];
-            var jwtAudience = jwtSettings["Audience"];
-
-            if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtAudience))
-            {
-                throw new InvalidOperationException("JWT configuration is missing.");
-            }
-
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings");
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -72,21 +55,28 @@ namespace E_commerce_Web_Api
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtIssuer,
-                    ValidAudience = jwtAudience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidAudience = jwtSettings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
                 };
             });
 
             builder.Services.AddScoped<JwtService>();
+            builder.Services.AddScoped<EmailService>();
 
             builder.Services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
 
-            builder.Services.AddControllers();
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                });
 
             var app = builder.Build();
 
@@ -122,31 +112,6 @@ namespace E_commerce_Web_Api
             });
 
             app.MapControllers();
-
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-
-                var roles = new[] { "Admin", "User" };
-                foreach (var role in roles)
-                {
-                    if (!await roleManager.RoleExistsAsync(role))
-                    {
-                        await roleManager.CreateAsync(new IdentityRole(role));
-                    }
-                }
-
-                var adminEmail = "admin@mail.com";
-                var adminUser = await userManager.FindByEmailAsync(adminEmail);
-                if (adminUser == null)
-                {
-                    adminUser = new ApplicationUser { UserName = "admin", Email = adminEmail };
-                    await userManager.CreateAsync(adminUser, "Admin@1234");
-                    await userManager.AddToRoleAsync(adminUser, "Admin");
-                }
-            }
 
             app.Run();
         }
