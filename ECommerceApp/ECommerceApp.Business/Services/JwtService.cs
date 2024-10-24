@@ -1,4 +1,5 @@
-﻿using ECommerceApp.DAL.Data.Models;
+﻿using ECommerceApp.Business.Contract;
+using ECommerceApp.DAL.Data.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -7,18 +8,20 @@ using System.Text;
 
 namespace ECommerceApp.Business.Services
 {
-    public class JwtService
+    public class JwtService : IJwtService
     {
-        private readonly IConfiguration configuration;
+        private readonly IConfiguration _configuration;
 
-        public JwtService(IConfiguration _configuration)
+        public JwtService(IConfiguration configuration)
         {
-            this.configuration = _configuration;
+            _configuration = configuration;
         }
         public string GenerateJwtToken(ApplicationUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(this.configuration["JwtSettings:Key"]);
+
+            var key = Encoding.ASCII.GetBytes(this._configuration["JwtSettings:Key"]);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]

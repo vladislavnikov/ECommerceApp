@@ -63,6 +63,7 @@ namespace E_commerce_Web_Api
 
             builder.Services.AddScoped<JwtService>();
             builder.Services.AddScoped<EmailService>();
+            builder.Services.AddScoped<AuthService>();
 
             builder.Services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();

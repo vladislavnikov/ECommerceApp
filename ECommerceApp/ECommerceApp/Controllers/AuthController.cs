@@ -1,9 +1,7 @@
-﻿using ECommerceApp.DAL.Data.Models;
-using ECommerceApp.Business.DTOs;
+﻿using ECommerceApp.Business.DTOs;
 using ECommerceApp.Business.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerceApp.Controllers
 {
@@ -11,83 +9,53 @@ namespace ECommerceApp.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly JwtService _jwtService;
-        private readonly EmailService _emailService;
-        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly AuthService _authService;
 
-        public AuthController(
-            SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager,
-            JwtService jwtService,
-            EmailService emailService,
-            RoleManager<IdentityRole<Guid>> roleManager)
+        public AuthController(AuthService authService)
         {
-            _signInManager = signInManager;
-            _userManager = userManager;
-            _jwtService = jwtService;
-            _emailService = emailService;
-            _roleManager = roleManager;
+            _authService = authService;
         }
 
         [AllowAnonymous]
         [HttpPost("signIn")]
         public async Task<IActionResult> SignIn([FromBody] SignInRequestModel model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
-            {
-                if (!await _userManager.IsEmailConfirmedAsync(user))
-                {
-                    return BadRequest("Email not confirmed");
-                }
+            var (success, token) = await _authService.SignInAsync(model);
 
-                var token = _jwtService.GenerateJwtToken(user);
+            if (success)
+            {
                 return Ok(new { Token = token });
             }
-            return Unauthorized();
+
+            return Unauthorized(token);
         }
-
-
 
         [AllowAnonymous]
         [HttpPost("signUp")]
         public async Task<IActionResult> SignUp([FromBody] SignUpRequestModel model)
         {
-            var user = new ApplicationUser
+            var (success, message) = await _authService.SignUpAsync(model, Url, Request);
+
+            if (success)
             {
-                UserName = model.Email,
-                Email = model.Email,
-                EmailConfirmed = false
-            };
+                return StatusCode(201, message);
+            }
 
-            var role = await _roleManager.FindByNameAsync("User");
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            await _userManager.AddToRoleAsync(user, "User");
-
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var confirmationLink = Url.Action(nameof(EmailConfirm), "Auth", new { userId = user.Id, token }, Request.Scheme);
-            
-
-            return StatusCode(201);
+            return BadRequest(message);
         }
 
         [AllowAnonymous]
         [HttpGet("emailConfirm")]
         public async Task<IActionResult> EmailConfirm(Guid userId, string token)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-                return BadRequest("Invalid user ID");
+            var (success, message) = await _authService.ConfirmEmailAsync(userId, token);
 
-            var result = await _userManager.ConfirmEmailAsync(user, token);
-            if (result.Succeeded)
-                return NoContent();
+            if (success)
+            {
+                return Ok(message);
+            }
 
-            return BadRequest(result.Errors);
+            return BadRequest(message);
         }
     }
 }

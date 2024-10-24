@@ -1,26 +1,41 @@
 ﻿using System.Net.Mail;
 using System.Net;
 using Microsoft.Extensions.Configuration;
+using ECommerceApp.Business.Contract;
 
 namespace ECommerceApp.Business.Services
 {
-    public class EmailService
+    public class EmailService : IEmailService
     {
-        private readonly IConfiguration configuration;
-        public EmailService(IConfiguration _configuration)
+        private readonly IConfiguration _configuration;
+        public EmailService(IConfiguration configuration)
         {
-            this.configuration = _configuration;
+            _configuration = _configuration;
         }
         public async Task SendEmailAsync(string email, string subject, string message)
         {
-            var smtpClient = new SmtpClient(configuration["Smtp:Host"])
+            var host = _configuration["Smtp:Host"];
+            var port = _configuration["Smtp:Port"];
+            var username = _configuration["Smtp:Username"];
+            var password = _configuration["Smtp:Password"];
+            var fromEmail = _configuration["Smtp:FromEmail"];
+
+            if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(port) ||
+                string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) ||
+                string.IsNullOrEmpty(fromEmail))
             {
-                Port = int.Parse(configuration["Smtp:Port"]),
-                Credentials = new NetworkCredential(configuration["Smtp:Username"], configuration["Smtp:Password"]),
+                throw new InvalidOperationException("SMTP configuration is missing or incomplete.");
+            }
+
+            var smtpClient = new SmtpClient(host)
+            {
+                Port = int.Parse(port),
+                Credentials = new NetworkCredential(username, password),
                 EnableSsl = true,
             };
 
-            await smtpClient.SendMailAsync(new MailMessage(configuration["Smtp:FromEmail"], email, subject, message));
+            await smtpClient.SendMailAsync(new MailMessage(fromEmail, email, subject, message));
         }
+
     }
 }
