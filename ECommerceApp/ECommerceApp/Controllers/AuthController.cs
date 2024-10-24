@@ -1,4 +1,5 @@
-﻿using ECommerceApp.Business.DTOs;
+﻿using ECommerceApp.Business.Contract;
+using ECommerceApp.Business.DTOs;
 using ECommerceApp.Business.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace ECommerceApp.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly AuthService _authService;
+        private readonly IAuthService _authService;
 
         public AuthController(AuthService authService)
         {

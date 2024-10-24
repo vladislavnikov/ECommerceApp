@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Text;
 using ECommerceApp.DAL.Data.Models;
 using ECommerceApp.Business.Services;
+using ECommerceApp.Business.Contract;
 
 namespace E_commerce_Web_Api
 {
@@ -61,9 +62,9 @@ namespace E_commerce_Web_Api
                 };
             });
 
-            builder.Services.AddScoped<JwtService>();
-            builder.Services.AddScoped<EmailService>();
-            builder.Services.AddScoped<AuthService>();
+            builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
             builder.Services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();

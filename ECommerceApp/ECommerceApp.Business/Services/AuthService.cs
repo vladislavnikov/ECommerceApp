@@ -12,15 +12,15 @@ namespace ECommerceApp.Business.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
-        private readonly JwtService _jwtService;
-        private readonly EmailService _emailService;
+        private readonly IJwtService _jwtService;
+        private readonly IEmailService _emailService;
 
         public AuthService(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             RoleManager<IdentityRole<Guid>> roleManager,
-            JwtService jwtService,
-            EmailService emailService)
+            IJwtService jwtService,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -34,11 +34,6 @@ namespace ECommerceApp.Business.Services
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                if (!await _userManager.IsEmailConfirmedAsync(user))
-                {
-                    return (false, "Email not confirmed");
-                }
-
                 var token = _jwtService.GenerateJwtToken(user);
                 return (true, token);
             }
