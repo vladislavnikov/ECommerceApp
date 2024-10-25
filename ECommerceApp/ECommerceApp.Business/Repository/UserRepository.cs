@@ -1,5 +1,6 @@
 ﻿using ECommerceApp.Business.Contract.IRepository;
 using ECommerceApp.DAL.Data.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerceApp.Business.Repository
@@ -7,10 +8,12 @@ namespace ECommerceApp.Business.Repository
     public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserRepository(ApplicationDbContext context)
+        public UserRepository(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager  = userManager;
         }
 
         public async Task<ApplicationUser> GetUserById(Guid userId)
@@ -34,6 +37,24 @@ namespace ECommerceApp.Business.Repository
 
             await _context.SaveChangesAsync();
             return userToUpdate;
+        }
+
+        public async Task<bool> UpdatePasswordAsync(ApplicationUser user, string oldPassword, string newPassword)
+        {
+            if (user == null)
+            {
+                return false;
+            }
+
+            var passwordCheck = await _userManager.CheckPasswordAsync(user, oldPassword);
+
+            if (!passwordCheck)
+            {
+                return false; 
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+            return result.Succeeded;
         }
 
     }
