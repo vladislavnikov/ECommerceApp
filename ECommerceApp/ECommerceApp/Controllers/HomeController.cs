@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerceApp.Controllers
 {
@@ -6,17 +7,18 @@ namespace ECommerceApp.Controllers
     [ApiController]
     public class HomeController : ControllerBase
     {
-        private readonly ILogger<HomeController> logger;
+        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> _logger)
+        public HomeController(ILogger<HomeController> logger)
         {
-            this.logger = _logger;
+            _logger = logger;
         }
 
-        [HttpGet("GetInfo")]
+        [Authorize(Roles = "Admin")]
+        [HttpGet("getInfo")]
         public IActionResult GetInfo()
         {
-            this.logger.LogInformation("Handling GetInfo request");
+            _logger.LogInformation("Handling GetInfo request");
 
             try
             {
@@ -24,7 +26,7 @@ namespace ECommerceApp.Controllers
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "Error occurred while processing GetInfo request");
+                _logger.LogError(ex, "Error occurred while processing GetInfo request");
                 return StatusCode(500, "An error occurred.");
             }
         }

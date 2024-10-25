@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerceApp", "ECommerceApp\ECommerceApp.csproj", "{290A3401-37C9-424A-9AE0-52AD4A843409}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerceApp", "ECommerceApp\ECommerceApp.csproj", "{290A3401-37C9-424A-9AE0-52AD4A843409}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerceApp.Business", "ECommerceApp.Business\ECommerceApp.Business.csproj", "{4CE45060-1897-4940-8272-23DC20D8065D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerceApp.Business", "ECommerceApp.Business\ECommerceApp.Business.csproj", "{4CE45060-1897-4940-8272-23DC20D8065D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerceApp.DAL", "ECommerceApp.DAL\ECommerceApp.DAL.csproj", "{2E34C116-2A2D-4B72-9680-0AB768AEBA98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerceApp.DAL", "ECommerceApp.DAL\ECommerceApp.DAL.csproj", "{2E34C116-2A2D-4B72-9680-0AB768AEBA98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerceApp.Tests", "ECommerceApp.Tests\ECommerceApp.Tests.csproj", "{3B6282A2-021E-41F5-8158-198E2F0F32D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerceApp.Tests", "ECommerceApp.Tests\ECommerceApp.Tests.csproj", "{3B6282A2-021E-41F5-8158-198E2F0F32D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

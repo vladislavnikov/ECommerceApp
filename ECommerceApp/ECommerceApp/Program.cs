@@ -1,11 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Text.Json;
-using ECommerceApp.DAL.Data;
+using System.Text.Json.Serialization;
 using ECommerceApp.Business.Helper;
 using Serilog;
 using Serilog.Exceptions;
 using E_commerce_Web_Api.Middleware;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using System.Text;
+using ECommerceApp.DAL.Data.Models;
+using ECommerceApp.Business.Services;
+using ECommerceApp.Business.Contract;
 
 namespace E_commerce_Web_Api
 {
@@ -14,12 +21,12 @@ namespace E_commerce_Web_Api
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-               .ReadFrom.Configuration(new ConfigurationBuilder()
-                   .SetBasePath(Directory.GetCurrentDirectory())
-                   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                   .Build())
-               .Enrich.WithExceptionDetails()
-               .CreateLogger();
+                .ReadFrom.Configuration(new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .Build())
+                .Enrich.WithExceptionDetails()
+                .CreateLogger();
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -31,13 +38,47 @@ namespace E_commerce_Web_Api
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidAudience = jwtSettings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+                };
+            });
+
+            builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
             builder.Services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
 
-            builder.Services.AddControllers();
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                });
 
             var app = builder.Build();
 
@@ -50,6 +91,7 @@ namespace E_commerce_Web_Api
             }
 
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapHealthChecks("/health", new HealthCheckOptions
@@ -60,7 +102,8 @@ namespace E_commerce_Web_Api
                     var result = JsonSerializer.Serialize(new
                     {
                         status = report.Status.ToString(),
-                        checks = report.Entries.Select(e => new {
+                        checks = report.Entries.Select(e => new
+                        {
                             name = e.Key,
                             status = e.Value.Status.ToString(),
                             description = e.Value.Description
