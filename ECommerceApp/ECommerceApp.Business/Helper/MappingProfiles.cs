@@ -9,6 +9,7 @@ namespace ECommerceApp.Business.Helper
         public MappingProfiles()
         {
             CreateMap<ApplicationUser, UserUpdateDto>().ReverseMap();
+            CreateMap<ApplicationUser, UserInfoDto>().ReverseMap();
         }
     }
 }

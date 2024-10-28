@@ -2,6 +2,7 @@
 using ECommerceApp.DAL.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ECommerceApp.Business.Repository
 {
@@ -55,6 +56,12 @@ namespace ECommerceApp.Business.Repository
 
             var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
             return result.Succeeded;
+        }
+
+        public async Task<ApplicationUser> GetUserProfileAsync(Guid userId)
+        {
+           
+            return await _userManager.FindByIdAsync(userId.ToString());
         }
 
     }

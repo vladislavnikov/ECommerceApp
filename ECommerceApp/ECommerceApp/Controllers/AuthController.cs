@@ -3,6 +3,7 @@ using ECommerceApp.Business.DTOs;
 using ECommerceApp.Business.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ECommerceApp.Controllers
 {
@@ -12,7 +13,7 @@ namespace ECommerceApp.Controllers
     {
         private readonly IAuthService _authService;
 
-        public AuthController(AuthService authService)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
         }
