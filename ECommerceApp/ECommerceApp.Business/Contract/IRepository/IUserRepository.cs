@@ -1,12 +1,14 @@
-﻿using ECommerceApp.DAL.Data.Models;
+﻿using ECommerceApp.Business.DTO.User;
+using ECommerceApp.DAL.Data.Models;
 
 namespace ECommerceApp.Business.Contract.IRepository
 {
     public interface IUserRepository
     {
         Task<ApplicationUser> GetUserById(Guid userId);
-        Task<ApplicationUser> UpdateUser(ApplicationUser model);
-        Task<bool> UpdatePasswordAsync(ApplicationUser user, string oldPassword, string newPassword);
-        Task<ApplicationUser> GetUserProfileAsync(Guid userId);
+        Task<UserUpdateDto> UpdateUser(Guid userId, UserUpdateDto model);
+
+        Task<bool> UpdatePasswordAsync(Guid userId, PasswordUpdateDto model);
+        Task<UserUpdateDto> GetUserProfileAsync(Guid userId);
     }
 }

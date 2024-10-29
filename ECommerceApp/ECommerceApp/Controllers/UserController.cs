@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using ECommerceApp.Business.Contract.IRepository;
 using ECommerceApp.Business.DTO.User;
-using ECommerceApp.DAL.Data.Models;
+using ECommerceApp.Business.Model.Request;
+using ECommerceApp.Business.Model.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -23,26 +24,28 @@ namespace ECommerceApp.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UpdateUserProfile([FromBody] UserUpdateDto userUpdateDto)
+        public async Task<IActionResult> UpdateUserProfile([FromBody] UserUpdateRequest userUpdateModel)
         {
-            var user = _mapper.Map<ApplicationUser>(userUpdateDto);
-            await _userRepository.UpdateUser(user);
-            return Ok(userUpdateDto);
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var user = _mapper.Map<UserUpdateDto>(userUpdateModel);
+
+            var updatedUser = await _userRepository.UpdateUser(userId, user);
+
+            var responseModel = _mapper.Map<UserUpdateResponse>(updatedUser);
+
+            return Ok(responseModel);
         }
 
         [HttpPatch("password")]
         [Authorize]
-        public async Task<IActionResult> UpdatePassword([FromBody] PasswordUpdateDto passwordUpdateDto)
+        public async Task<IActionResult> UpdatePassword([FromBody] PasswordUpdateRequest passwordUpdateModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var user = await _userRepository.GetUserById(userId);
 
-            var result = await _userRepository.UpdatePasswordAsync(user, passwordUpdateDto.OldPassword, passwordUpdateDto.NewPassword);
+            var passDto = _mapper.Map<PasswordUpdateDto>(passwordUpdateModel);
+
+            var result = await _userRepository.UpdatePasswordAsync(userId, passDto);
 
             if (!result)
             {
@@ -66,9 +69,9 @@ namespace ECommerceApp.Controllers
 
             var userProfile = await _userRepository.GetUserProfileAsync(userId);
 
-            var userProfileDto = _mapper.Map<UserInfoDto>(userProfile);
+            var responseModel = _mapper.Map<UserInfoResponse>(userProfile);
 
-            return Ok(userProfileDto);
+            return Ok(responseModel);
         }
     }
 }

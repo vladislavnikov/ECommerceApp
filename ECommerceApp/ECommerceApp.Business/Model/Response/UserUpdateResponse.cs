@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ECommerceApp.Business.DTO.User
+﻿namespace ECommerceApp.Business.Model.Response
 {
-    public class UserUpdateDto
+    public class UserUpdateResponse
     {
         public string UserName { get; set; }
         public string Email { get; set; }
