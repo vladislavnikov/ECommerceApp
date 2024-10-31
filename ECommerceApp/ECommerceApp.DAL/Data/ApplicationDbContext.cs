@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
     public DbSet<ApplicationUser> Users { get; set; }
+    public DbSet<Product> Products { get; set; }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
@@ -23,5 +24,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
 
         var userRoleConfig = new UserRoleConfig(userConfig.AdminUser.Id, RoleConfig.AdminRoleId);
         modelBuilder.ApplyConfiguration(userRoleConfig);
+
+        modelBuilder.Entity<Product>()
+            .HasIndex(p => p.Name);
+
+        modelBuilder.Entity<Product>()
+            .HasIndex(p => p.Platform);
+
+        modelBuilder.Entity<Product>()
+            .HasIndex(p => p.DateCreated);
+
+        modelBuilder.Entity<Product>()
+            .HasIndex(p => p.TotalRating);
     }
 }
