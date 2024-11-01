@@ -11,28 +11,39 @@ namespace ECommerceApp.Business.Repository
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
 
-        public ProductRepository(ApplicationDbContext context)
+        public ProductRepository(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
-
         public async Task<List<PlatformResponseModel>> GetTopPlatformsAsync()
         {
-            return await _context.Products
-              .GroupBy(p => p.Platform)
-              .OrderByDescending(g => g.Count())
-              .Take(3)
-              .Select(g => new PlatformResponseModel
-              {
-                  PlatformName = g.Key.ToString(),  
-                  ProductCount = g.Count()
-              })
-              .ToListAsync();
+            var platformGroups = await _context.Products
+                .Where(p => p.Platform != null) 
+                .GroupBy(p => p.Platform)
+                .Select(g => new
+                {
+                    PlatformName = g.Key.ToString(),
+                    ProductCount = g.Count()
+                })
+                .ToListAsync();
+
+            return platformGroups
+                .OrderByDescending(g => g.ProductCount)
+                .Take(3)
+                .Select(g => new PlatformResponseModel
+                {
+                    PlatformName = g.PlatformName,
+                    ProductCount = g.ProductCount
+                })
+                .ToList();
         }
+
+
 
         public async Task<List<ProductDto>> SearchGamesAsync(string term, int limit, int offset)
         {
-           var products = await _context.Products
+            var products = await _context.Products
                 .Where(p => p.Name.Contains(term))
                 .Skip(offset)
                 .Take(limit)
