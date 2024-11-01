@@ -1,5 +1,6 @@
 ﻿using ECommerceApp.DAL.Data.Configuration;
 using ECommerceApp.DAL.Data.Models;
+using ECommerceApp.DAL.Data.Seeds;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
         var userConfig = new UserConfig();
         modelBuilder.ApplyConfiguration(userConfig);
         modelBuilder.ApplyConfiguration(new RoleConfig());
+        modelBuilder.ApplyConfiguration(new ProductConfig());
 
         var userRoleConfig = new UserRoleConfig(userConfig.AdminUser.Id, RoleConfig.AdminRoleId);
         modelBuilder.ApplyConfiguration(userRoleConfig);

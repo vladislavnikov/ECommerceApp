@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerceApp.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241031132912_AddProduct")]
-    partial class AddProduct
+    [Migration("20241101071929_SeedProduct")]
+    partial class SeedProduct
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -98,16 +98,16 @@ namespace ECommerceApp.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8037f0c1-d38d-42b2-a123-b510616c4a42"),
+                            Id = new Guid("4cfd4348-a5c9-47ad-860d-6deb7297b827"),
                             AccessFailedCount = 0,
                             AccountCreationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "2eb5e550-9bc2-40de-b216-ed308fca9019",
+                            ConcurrencyStamp = "3beff870-f36c-4220-80d9-254005b7910b",
                             Email = "admin@mail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@MAIL.COM",
                             NormalizedUserName = "ADMINUSER",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIqD23lNRi0XLc1mR7BSMcssPDRAiSWnKtLASnlG2rGoyy8vifoYZq73/EKEhPMKvQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGh987+UHIq6OuL+G7qlwM+UdoWFBh0so301bvhUbtUXHJn7WCE9S6MYAORyZijKfw==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "AdminUser"
@@ -149,6 +149,53 @@ namespace ECommerceApp.DAL.Migrations
                     b.HasIndex("TotalRating");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DateCreated = new DateTime(2024, 6, 1, 9, 19, 28, 252, DateTimeKind.Local).AddTicks(7101),
+                            Name = "Game A",
+                            Platform = 0,
+                            Price = 29.99m,
+                            TotalRating = 85
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DateCreated = new DateTime(2024, 8, 1, 9, 19, 28, 252, DateTimeKind.Local).AddTicks(7186),
+                            Name = "Game B",
+                            Platform = 1,
+                            Price = 49.99m,
+                            TotalRating = 90
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DateCreated = new DateTime(2024, 9, 1, 9, 19, 28, 252, DateTimeKind.Local).AddTicks(7194),
+                            Name = "Game C",
+                            Platform = 2,
+                            Price = 39.99m,
+                            TotalRating = 75
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DateCreated = new DateTime(2024, 10, 1, 9, 19, 28, 252, DateTimeKind.Local).AddTicks(7201),
+                            Name = "Game D",
+                            Platform = 3,
+                            Price = 59.99m,
+                            TotalRating = 88
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DateCreated = new DateTime(2024, 10, 22, 9, 19, 28, 252, DateTimeKind.Local).AddTicks(7209),
+                            Name = "Game E",
+                            Platform = 4,
+                            Price = 0.99m,
+                            TotalRating = 95
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -181,13 +228,13 @@ namespace ECommerceApp.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("4134e550-2acd-47ee-8d8f-4a0bab5b99dd"),
+                            Id = new Guid("1bd4c0f5-99fe-46ef-bc39-f1b3bc97ad00"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("6c73e0bb-3439-4eeb-9a5b-7e39ce55f86a"),
+                            Id = new Guid("1a68da07-a44f-483a-97b8-1b6e1d447ede"),
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -279,8 +326,8 @@ namespace ECommerceApp.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("8037f0c1-d38d-42b2-a123-b510616c4a42"),
-                            RoleId = new Guid("4134e550-2acd-47ee-8d8f-4a0bab5b99dd")
+                            UserId = new Guid("4cfd4348-a5c9-47ad-860d-6deb7297b827"),
+                            RoleId = new Guid("1bd4c0f5-99fe-46ef-bc39-f1b3bc97ad00")
                         });
                 });
 
