@@ -19,6 +19,11 @@ namespace ECommerceApp.Controllers
             _mapper = mapper;
         }
 
+
+        /// <summary>
+        /// Retrieves the top platforms by product count.
+        /// </summary>
+        /// <returns>A list of top used platforms.</returns>
         [HttpGet("topPlatforms")]
         public async Task<IActionResult> GetTopPlatforms()
         {
@@ -26,6 +31,13 @@ namespace ECommerceApp.Controllers
             return Ok(topPlatforms);
         }
 
+        /// <summary>
+        /// Searches for games based on a search term.
+        /// </summary>
+        /// <param name="term">The search term used to filter games.</param>
+        /// <param name="limit">The maximum number of results to return.</param>
+        /// <param name="offset">The number of results to skip before starting to collect the result set.</param>
+        /// <returns>A list of games that match the search criteria.</returns>
         [HttpGet("search")]
         public async Task<IActionResult> SearchGames(string term, int limit, int offset)
         {

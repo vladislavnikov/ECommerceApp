@@ -22,6 +22,11 @@ namespace ECommerceApp.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Updates the user profile.
+        /// </summary>
+        /// <param name="userUpdateModel">The user update model containing user details to update.</param>
+        /// <returns>Returns the updated user profile.</returns>
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> UpdateUserProfile([FromBody] UserUpdateRequest userUpdateModel)
@@ -37,6 +42,11 @@ namespace ECommerceApp.Controllers
             return Ok(responseModel);
         }
 
+        /// <summary>
+        /// Updates the user's password.
+        /// </summary>
+        /// <param name="passwordUpdateModel">The password update model containing new password details.</param>
+        /// <returns>No content if the update was successful.</returns>
         [HttpPatch("password")]
         [Authorize]
         public async Task<IActionResult> UpdatePassword([FromBody] PasswordUpdateRequest passwordUpdateModel)
@@ -55,6 +65,10 @@ namespace ECommerceApp.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Gets the user profile.
+        /// </summary>
+        /// <returns>Returns the user profile details.</returns>
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetUserProfile()

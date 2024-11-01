@@ -2,7 +2,10 @@
 
 namespace ECommerceApp.Business.DTOs
 {
-    public  class SignInRequestModel : SignUpRequestModel
+    /// <summary>
+    /// Model for user sign-in requests.
+    /// </summary>
+    public class SignInRequestModel : SignUpRequestModel
     {
     }
 }
