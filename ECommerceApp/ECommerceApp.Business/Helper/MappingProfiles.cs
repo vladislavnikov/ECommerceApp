@@ -25,7 +25,11 @@ namespace ECommerceApp.Business.Helper
             CreateMap<Product, ProductDto>().ReverseMap();
 
             CreateMap<Product, ProductResponseModel>()
-            .ForMember(dest => dest.Platform, opt => opt.MapFrom(src => src.Platform.ToString())); 
+            .ForMember(dest => dest.Platform, opt => opt.MapFrom(src => src.Platform.ToString()));
+
+            CreateMap<Product, ProductRequestModel>().ReverseMap();
+
+            CreateMap<ProductResponseModel, ProductRequestModel>().ReverseMap();
         }
     }
 }
