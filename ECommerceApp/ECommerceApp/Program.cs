@@ -16,6 +16,7 @@ using ECommerceApp.Business.Contract;
 using ECommerceApp.Business.Contract.IRepository;
 using ECommerceApp.Business.Repository;
 using Microsoft.OpenApi.Models;
+using ECommerceApp.Business.Model.Configuration;
 
 namespace E_commerce_Web_Api
 {
@@ -65,11 +66,15 @@ namespace E_commerce_Web_Api
                 };
             });
 
+            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+
+
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<ICloudinaryService ,CloudinaryService>();
 
             builder.Services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
