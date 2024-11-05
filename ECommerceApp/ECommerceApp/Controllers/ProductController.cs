@@ -59,7 +59,7 @@ namespace ECommerceApp.Controllers
         [HttpGet("id/{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = _productRepository.GetProduct(id);
+            var product = await _productRepository.GetProduct(id);
 
             var response = _mapper.Map<ProductResponseModel>(product);
 

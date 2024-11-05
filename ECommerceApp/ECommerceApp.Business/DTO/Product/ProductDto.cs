@@ -1,6 +1,4 @@
-﻿using ECommerceApp.DAL.Data.Models.Enum;
-
-namespace ECommerceApp.Business.DTO.Product
+﻿namespace ECommerceApp.Business.DTO.Product
 {
     public class ProductDto
     {
@@ -18,7 +16,7 @@ namespace ECommerceApp.Business.DTO.Product
 
         public string Genre { get; set; }
 
-        public char Rating { get; set; }
+        public int Rating { get; set; }
 
         public string Logo { get; set; }
 

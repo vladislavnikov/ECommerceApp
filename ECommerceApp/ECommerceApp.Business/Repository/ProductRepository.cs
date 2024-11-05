@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using ECommerceApp.Business.Contract.IRepository;
 using ECommerceApp.Business.DTO.Product;
-using ECommerceApp.Business.Model.Model;
 using ECommerceApp.Business.Model.Request;
 using ECommerceApp.Business.Model.Response;
 using ECommerceApp.DAL.Data.Models;
+using ECommerceApp.DAL.Data.Models.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerceApp.Business.Repository
@@ -39,7 +40,7 @@ namespace ECommerceApp.Business.Repository
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
 
-            var dto = _mapper.Map<ProductDto>(product);
+            var dto  = _mapper.Map<ProductDto>(product);
 
             return dto;
         }
@@ -85,14 +86,15 @@ namespace ECommerceApp.Business.Repository
             var productToUpdate = await _context.Products.FirstOrDefaultAsync(p => p.Id == model.Id);
 
             productToUpdate.Name = model.Name;
-            productToUpdate.Platform = productToUpdate.Platform;
-            productToUpdate.TotalRating = productToUpdate.TotalRating;
-            productToUpdate.DateCreated = productToUpdate.DateCreated;
-            productToUpdate.Price = productToUpdate.Price;
-            productToUpdate.Rating = productToUpdate.Rating;
-            productToUpdate.Logo = productToUpdate.Logo;
-            productToUpdate.Background = productToUpdate.Background;
-            productToUpdate.Count = productToUpdate.Count;
+            productToUpdate.Platform = Enum.Parse<Platforms>(model.Platform);
+            productToUpdate.TotalRating = model.TotalRating;
+            productToUpdate.DateCreated = model.DateCreated;
+            productToUpdate.Price = model.Price;
+            productToUpdate.Rating = (Rating)model.Rating;
+            productToUpdate.Logo = model.Logo;
+            productToUpdate.Background = model.Background;
+            productToUpdate.Count = model.Count;
+            productToUpdate.Genre = model.Genre;
 
             await _context.SaveChangesAsync();
         }

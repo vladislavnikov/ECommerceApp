@@ -22,12 +22,17 @@ namespace ECommerceApp.Business.Helper
 
             CreateMap<PasswordUpdateDto, PasswordUpdateRequest>().ReverseMap();
 
+            //Product Maps
+
             CreateMap<Product, ProductDto>().ReverseMap();
 
-            CreateMap<Product, ProductResponseModel>()
-            .ForMember(dest => dest.Platform, opt => opt.MapFrom(src => src.Platform.ToString()));
+            CreateMap<Product, ProductResponseModel>().ReverseMap();
 
             CreateMap<Product, ProductRequestModel>().ReverseMap();
+
+            CreateMap<ProductDto, ProductResponseModel>().ReverseMap();
+
+            CreateMap<ProductDto, ProductRequestModel>().ReverseMap();
 
             CreateMap<ProductResponseModel, ProductRequestModel>().ReverseMap();
         }
