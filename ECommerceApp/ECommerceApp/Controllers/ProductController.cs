@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using ECommerceApp.Business.Contract.IRepository;
 using ECommerceApp.Business.DTO.Product;
-using ECommerceApp.Business.Model.Model;
-using ECommerceApp.Business.Model.Request;
 using ECommerceApp.DAL.Data.Models;
+using ECommerceApp.Model.Request;
+using ECommerceApp.Model.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -73,11 +73,17 @@ namespace ECommerceApp.Controllers
         /// <returns>Returns new updated product</returns>
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult<ProductResponseModel>> CreateProduct([FromForm] ProductRequestModel productRequest)
+        public async Task<ActionResult<ProductResponseModel>> CreateProduct([FromBody] ProductRequestModel productRequest)
         {
-            await _productRepository.CreateProductAsync(productRequest);
-            return CreatedAtAction(nameof(GetProduct), new { id = productRequest.Id }, productRequest);
+            var dto = _mapper.Map<ProductDto>(productRequest);
+
+            var createdProductDto = await _productRepository.CreateProductAsync(dto);
+
+            var response = _mapper.Map<ProductResponseModel>(createdProductDto);
+
+            return CreatedAtAction(nameof(GetProduct), new { id = response.Id }, response);
         }
+
 
         /// <summary>
         /// Updates product.
@@ -86,9 +92,10 @@ namespace ECommerceApp.Controllers
         /// <returns>No content the new product info.</returns>
         [Authorize(Roles = "Admin")]
         [HttpPut]
-        public async Task<ActionResult<Product>> UpdateProduct([FromForm] ProductRequestModel productRequest)
+        public async Task<ActionResult<Product>> UpdateProduct([FromBody] ProductRequestUpdateModel productRequest)
         {
-            await _productRepository.UpdateProductAsync(productRequest);
+            var dto = _mapper.Map<ProductDto>(productRequest);
+            await _productRepository.UpdateProductAsync(dto);
 
             return CreatedAtAction(nameof(GetProduct), new { id = productRequest.Id }, productRequest);
         }

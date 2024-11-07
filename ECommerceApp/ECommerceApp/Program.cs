@@ -5,7 +5,6 @@ using System.Text.Json.Serialization;
 using ECommerceApp.Business.Helper;
 using Serilog;
 using Serilog.Exceptions;
-using E_commerce_Web_Api.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +16,8 @@ using ECommerceApp.Business.Contract.IRepository;
 using ECommerceApp.Business.Repository;
 using Microsoft.OpenApi.Models;
 using ECommerceApp.Business.Model.Configuration;
+using ECommerceApp.Middlewares;
+using ECommerceApp.Helper;
 
 namespace E_commerce_Web_Api
 {
@@ -79,7 +80,8 @@ namespace E_commerce_Web_Api
             builder.Services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
 
-            builder.Services.AddAutoMapper(typeof(MappingProfiles));
+            builder.Services.AddAutoMapper(typeof(MappingApiProfiles), typeof(MappingBusinessProfiles));
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {

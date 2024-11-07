@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ECommerceApp.Business.Model.Request
+namespace ECommerceApp.Model.Request
 {
     public class PasswordUpdateRequest
     {

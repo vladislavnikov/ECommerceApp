@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ECommerceApp.Business.Model.Request
+namespace ECommerceApp.Model.Request
 {
     /// <summary>
     /// Model for updating user profile information.

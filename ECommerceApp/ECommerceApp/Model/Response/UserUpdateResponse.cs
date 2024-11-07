@@ -1,6 +1,6 @@
 ﻿using ECommerceApp.Business.DTO.User;
 
-namespace ECommerceApp.Business.Model.Response
+namespace ECommerceApp.Model.Response
 {
     public class UserUpdateResponse : UserInfoDto
     {

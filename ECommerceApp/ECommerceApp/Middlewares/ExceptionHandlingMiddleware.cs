@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using System.Text.Json;
 
-namespace E_commerce_Web_Api.Middleware
+namespace ECommerceApp.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
@@ -27,7 +27,7 @@ namespace E_commerce_Web_Api.Middleware
 
                 var result = JsonSerializer.Serialize(new
                 {
-                    StatusCode = context.Response.StatusCode,
+                    context.Response.StatusCode,
                     Message = "An internal server error."
                 });
 
