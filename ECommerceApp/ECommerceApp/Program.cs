@@ -31,6 +31,7 @@ namespace E_commerce_Web_Api
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                     .Build())
                 .Enrich.WithExceptionDetails()
+                .WriteTo.Console()
                 .CreateLogger();
 
             var builder = WebApplication.CreateBuilder(args);
