@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using ECommerceApp.Business.Contract.IRepository;
 using ECommerceApp.Business.DTO.Product;
+using ECommerceApp.DAL.Data.Models;
+using ECommerceApp.Model.Request;
+using ECommerceApp.Model.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,5 +51,66 @@ namespace ECommerceApp.Controllers
             return Ok(dtoList);
         }
 
+        /// <summary>
+        /// Searches for game.
+        /// </summary>
+        /// <param name="id">The Id param is for searching a game by its Id.</param>
+        /// <returns>Game with an Id</returns>
+        [HttpGet("id/{id}")]
+        public async Task<ActionResult<Product>> GetProduct(int id)
+        {
+            var product = await _productRepository.GetProduct(id);
+
+            var response = _mapper.Map<ProductResponseModel>(product);
+
+            return Ok(product);
+        }
+
+        /// <summary>
+        /// Creates product.
+        /// </summary>
+        /// <param name="productRequest">The product create model containing new create details.</param>
+        /// <returns>Returns new updated product</returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<ActionResult<ProductResponseModel>> CreateProduct([FromBody] ProductRequestModel productRequest)
+        {
+            var dto = _mapper.Map<ProductDto>(productRequest);
+
+            var createdProductDto = await _productRepository.CreateProductAsync(dto);
+
+            var response = _mapper.Map<ProductResponseModel>(createdProductDto);
+
+            return CreatedAtAction(nameof(GetProduct), new { id = response.Id }, response);
+        }
+
+
+        /// <summary>
+        /// Updates product.
+        /// </summary>
+        /// <param name="productRequest">The product update model containing new product details.</param>
+        /// <returns>No content the new product info.</returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPut]
+        public async Task<ActionResult<Product>> UpdateProduct([FromBody] ProductRequestUpdateModel productRequest)
+        {
+            var dto = _mapper.Map<ProductDto>(productRequest);
+            await _productRepository.UpdateProductAsync(dto);
+
+            return CreatedAtAction(nameof(GetProduct), new { id = productRequest.Id }, productRequest);
+        }
+
+        /// <summary>
+        /// Delete game.
+        /// </summary>
+        /// <param name="id">The Id param is for searching a game by its Id.</param>
+        /// <returns>No content</returns>
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("id/{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            await _productRepository.DeleteProductAsync(id);
+            return NoContent();
+        }
     }
 }

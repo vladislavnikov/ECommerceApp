@@ -1,27 +1,17 @@
-﻿namespace ECommerceApp.Business.DTO.Product
+﻿namespace ECommerceApp.Model.Response
 {
-    public class ProductDto
+    public class ProductResponseModel
     {
         public int Id { get; set; }
-
         public string Name { get; set; } = null!;
-
-        public string Platform { get; set; }
-
+        public string Platform { get; set; } = null!;
         public DateTime DateCreated { get; set; }
-
         public int TotalRating { get; set; }
-
         public decimal Price { get; set; }
-
-        public string Genre { get; set; }
-
+        public string Genre { get; set; } = null!;
         public int Rating { get; set; }
-
-        public string Logo { get; set; }
-
-        public string Background { get; set; }
-
+        public string Logo { get; set; } = null!;
+        public string Background { get; set; } = null!;
         public int Count { get; set; }
     }
 }

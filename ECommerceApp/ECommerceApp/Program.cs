@@ -5,7 +5,6 @@ using System.Text.Json.Serialization;
 using ECommerceApp.Business.Helper;
 using Serilog;
 using Serilog.Exceptions;
-using E_commerce_Web_Api.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +15,9 @@ using ECommerceApp.Business.Contract;
 using ECommerceApp.Business.Contract.IRepository;
 using ECommerceApp.Business.Repository;
 using Microsoft.OpenApi.Models;
+using ECommerceApp.Business.Model.Configuration;
+using ECommerceApp.Middlewares;
+using ECommerceApp.Helper;
 
 namespace E_commerce_Web_Api
 {
@@ -29,6 +31,7 @@ namespace E_commerce_Web_Api
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                     .Build())
                 .Enrich.WithExceptionDetails()
+                .WriteTo.Console()
                 .CreateLogger();
 
             var builder = WebApplication.CreateBuilder(args);
@@ -65,16 +68,21 @@ namespace E_commerce_Web_Api
                 };
             });
 
+            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+
+
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<ICloudinaryService ,CloudinaryService>();
 
             builder.Services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
 
-            builder.Services.AddAutoMapper(typeof(MappingProfiles));
+            builder.Services.AddAutoMapper(typeof(MappingApiProfiles), typeof(MappingBusinessProfiles));
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {

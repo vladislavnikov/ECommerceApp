@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using ECommerceApp.Business.Contract.IRepository;
 using ECommerceApp.Business.DTO.User;
-using ECommerceApp.Business.Model.Request;
-using ECommerceApp.Business.Model.Response;
+using ECommerceApp.Model.Request;
+using ECommerceApp.Model.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
