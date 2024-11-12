@@ -163,9 +163,6 @@ namespace ECommerceApp.Tests.Repository
             Assert.Contains(resultWithOffset, p => p.Name == "Action Adventure Game");
         }
 
-
-
-
         [Fact]
         public async Task UpdateProductAsync_ShouldModifyExistingProduct()
         {
@@ -248,11 +245,11 @@ namespace ECommerceApp.Tests.Repository
         {
             // Arrange
             _context.Products.AddRange(new List<Product>
-    {
-        new Product { Name = "Action Game", Genre = "Action", Platform = Platforms.PC, Rating = Rating.T, Price = 20, Background = "background1.jpg", Logo = "logo1.jpg" },
-        new Product { Name = "Adventure Game", Genre = "Adventure", Platform = Platforms.Xbox, Rating = Rating.E, Price = 30, Background = "background2.jpg", Logo = "logo2.jpg" },
-        new Product { Name = "RPG Game", Genre = "RPG", Platform = Platforms.PC, Rating = Rating.A, Price = 50, Background = "background3.jpg", Logo = "logo3.jpg" }
-    });
+            {
+                new Product { Name = "Action Game", Genre = "Action", Platform = Platforms.PC, Rating = Rating.T, Price = 20, Background = "background1.jpg", Logo = "logo1.jpg" },
+                new Product { Name = "Adventure Game", Genre = "Adventure", Platform = Platforms.Xbox, Rating = Rating.E, Price = 30, Background = "background2.jpg", Logo = "logo2.jpg" },
+                new Product { Name = "RPG Game", Genre = "RPG", Platform = Platforms.PC, Rating = Rating.A, Price = 50, Background = "background3.jpg", Logo = "logo3.jpg" }
+            });
             await _context.SaveChangesAsync();
 
             var listDto = new ProductListDto
@@ -286,9 +283,9 @@ namespace ECommerceApp.Tests.Repository
                 Rating = Rating.T,
                 DateCreated = DateTime.UtcNow,
                 Price = 29.99m,
-                Background = "background.jpg",   // Added required property
-                Genre = "Adventure",             // Added required property
-                Logo = "logo.jpg"                // Added required property
+                Background = "background.jpg",   
+                Genre = "Adventure",             
+                Logo = "logo.jpg"                
             };
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
@@ -346,7 +343,5 @@ namespace ECommerceApp.Tests.Repository
                 .FirstOrDefaultAsync(r => r.ProductId == product.Id && r.UserId == Guid.Parse(userId));
             Assert.Null(deletedRating);
         }
-
-
     }
 }
