@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ECommerceApp.Business.DTO.Product;
+using ECommerceApp.Business.DTO.ProductRating;
 using ECommerceApp.Business.DTO.User;
 using ECommerceApp.Model.Request;
 using ECommerceApp.Model.Response;
@@ -21,6 +22,12 @@ namespace ECommerceApp.Helper
             CreateMap<ProductRequestModel, ProductDto>().ReverseMap();
 
             CreateMap<ProductRequestUpdateModel, ProductDto>().ReverseMap();
+
+            CreateMap<ProductRatingDto, RateProductRequestModel>();
+
+            CreateMap<ProductListRequest, ProductListDto>();
+
+            CreateMap<ProductListDto, ProductListResponse>();
         }
     }
 }

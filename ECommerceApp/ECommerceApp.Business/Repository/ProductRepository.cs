@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using ECommerceApp.Business.Contract.IRepository;
 using ECommerceApp.Business.DTO.Platform;
 using ECommerceApp.Business.DTO.Product;
+using ECommerceApp.Business.DTO.ProductRating;
 using ECommerceApp.DAL.Data.Models;
 using ECommerceApp.DAL.Data.Models.Enum;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +50,54 @@ namespace ECommerceApp.Business.Repository
             return dto;
         }
 
+        public async Task<ProductListDto> GetProducts(ProductListDto list)
+        {
+            IQueryable<Product> query = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrEmpty(list.Genre))
+            {
+                query = query.Where(p => p.Genre == list.Genre);
+            }
+
+            if (!string.IsNullOrEmpty(list.Age) && Enum.TryParse<Rating>(list.Age, out var age))
+            {
+                query = query.Where(p => p.Rating == age);
+            }
+
+            if (list.SortBy == "Rating")
+            {
+                query = list.Order == "asc" ? query.OrderBy(p => p.TotalRating) : query.OrderByDescending(p => p.TotalRating);
+            }
+            else if (list.SortBy == "Price")
+            {
+                query = list.Order == "asc" ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price);
+            }
+
+            var totalItems = await query.CountAsync();
+            var products = await query.Skip((list.Page - 1) * list.PageSize)
+                                       .Take(list.PageSize)
+                                       .Select(p => new ProductDto
+                                       {
+                                           Id = p.Id,
+                                           Name = p.Name,
+                                           Platform = p.Platform.ToString(),
+                                           DateCreated = p.DateCreated,
+                                           TotalRating = p.TotalRating,
+                                           Price = p.Price,
+                                           Genre = p.Genre,
+                                           Rating = (int)p.Rating,
+                                           Logo = p.Logo,
+                                           Background = p.Background,
+                                           Count = p.Count
+                                       })
+                                       .ToListAsync();
+
+            list.Products = products;
+            list.TotalItems = totalItems;
+
+            return list;
+        }
+
         public async Task<List<PlatfromDto>> GetTopPlatformsAsync()
         {
             var platformGroups = await _context.Products
@@ -71,7 +121,40 @@ namespace ECommerceApp.Business.Repository
                 .ToList();
         }
 
+        public async Task<ProductRatingDto> RateProduct(string userId, ProductRatingDto dto)
+        {
+            var productRating = await _context.ProductRatings
+             .FirstOrDefaultAsync(pr => pr.ProductId == dto.ProductId && pr.UserId == Guid.Parse(userId));
 
+            if (productRating != null)
+            {
+                productRating.Rating = dto.Rating;
+            }
+            else
+            {
+                productRating = new ProductRating
+                {
+                    ProductId = dto.ProductId,
+                    UserId = Guid.Parse(userId),
+                    Rating = dto.Rating
+                };
+                await _context.ProductRatings.AddAsync(productRating);
+            }
+
+            var reponseDto = _mapper.Map<ProductRatingDto>(productRating);
+
+            await _context.SaveChangesAsync();
+            return reponseDto;
+        }
+
+        public async Task RemoveRatingAsync(string userId, int productId)
+        {
+            var rating = await _context.ProductRatings
+                .FirstOrDefaultAsync(r => r.ProductId == productId && r.UserId == Guid.Parse(userId));
+
+            _context.ProductRatings.Remove(rating);
+            await _context.SaveChangesAsync();
+        }
 
         public async Task<List<ProductDto>> SearchGamesAsync(string term, int limit, int offset)
         {

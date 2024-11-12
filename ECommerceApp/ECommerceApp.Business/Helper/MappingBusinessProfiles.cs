@@ -21,7 +21,10 @@ namespace ECommerceApp.Business.Helper
             .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => (int)src.Rating)) 
             .ReverseMap()
             .ForMember(dest => dest.Platform, opt => opt.MapFrom(src => Enum.Parse<Platforms>(src.Platform))) 
-            .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => (Rating)src.Rating)); 
+            .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => (Rating)src.Rating));
+
+            CreateMap<ProductRating, ProductUpdateDto>().ReverseMap();
+
 
         }
     }

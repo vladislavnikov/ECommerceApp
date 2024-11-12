@@ -1,5 +1,4 @@
 ﻿using ECommerceApp.DAL.Data.Models.Enum;
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace ECommerceApp.DAL.Data.Models
