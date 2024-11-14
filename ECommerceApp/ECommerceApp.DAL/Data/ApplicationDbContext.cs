@@ -10,6 +10,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     public DbSet<ApplicationUser> Users { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductRating> ProductRatings { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
@@ -52,5 +54,20 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
             .HasOne(pr => pr.User)
             .WithMany(u => u.Ratings)
             .HasForeignKey(pr => pr.UserId);
+
+        modelBuilder.Entity<Order>()
+           .HasOne(o => o.User)
+           .WithMany(u => u.Orders)
+           .HasForeignKey(o => o.UserId);
+
+        modelBuilder.Entity<OrderItem>()
+            .HasOne(oi => oi.Order)
+            .WithMany(o => o.Items)
+            .HasForeignKey(oi => oi.OrderId);
+
+        modelBuilder.Entity<OrderItem>()
+            .HasOne(oi => oi.Product)
+            .WithMany()
+            .HasForeignKey(oi => oi.ProductId);
     }
 }
