@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using ECommerceApp.Business.Contract.IRepository;
 using ECommerceApp.Business.DTO.Product;
+using ECommerceApp.Business.DTO.ProductRating;
 using ECommerceApp.DAL.Data.Models;
 using ECommerceApp.Model.Request;
 using ECommerceApp.Model.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ECommerceApp.Controllers
 {
@@ -112,5 +115,43 @@ namespace ECommerceApp.Controllers
             await _productRepository.DeleteProductAsync(id);
             return NoContent();
         }
+
+        [Authorize]
+        [HttpPost("rating")]
+        public async Task<IActionResult> RateProduct([FromBody] RateProductRequestModel rateProductRequest)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var dto = _mapper.Map<ProductRatingDto>(rateProductRequest);
+
+            var respose = await _productRepository.RateProduct(userId, dto);
+
+            return Ok(respose);
+        }
+
+        [Authorize]
+        [HttpDelete("rating")]
+        public async Task<IActionResult> RemoveRating([FromQuery] int productId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            await _productRepository.RemoveRatingAsync(userId, productId);
+
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpGet("list")]
+        [ServiceFilter(typeof(ValidateProductListFilterAttribute))]
+        public async Task<IActionResult> GetProductList([FromQuery] ProductListRequest request)
+        {
+            var productListDto = _mapper.Map<ProductListDto>(request);
+
+            var result = await _productRepository.GetProducts(productListDto);
+
+            var response = _mapper.Map<ProductListResponse>(result);
+
+            return Ok(response);
+        }
     }
 }
+

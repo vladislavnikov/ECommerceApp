@@ -1,11 +1,14 @@
 ﻿using ECommerceApp.DAL.Data.Models.Enum;
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace ECommerceApp.DAL.Data.Models
 {
     public class Product
     {
+        public Product()
+        {
+            Ratings = new List<ProductRating>();
+        }
         public int Id { get; set; }
 
         public string Name { get; set; } = null!;
@@ -33,5 +36,7 @@ namespace ECommerceApp.DAL.Data.Models
 
         [Required]
         public int Count { get; set; }
+
+        public ICollection<ProductRating> Ratings { get; set; }
     }
 }

@@ -9,6 +9,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
 {
     public DbSet<ApplicationUser> Users { get; set; }
     public DbSet<Product> Products { get; set; }
+    public DbSet<ProductRating> ProductRatings { get; set; }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
@@ -38,5 +39,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
 
         modelBuilder.Entity<Product>()
             .HasIndex(p => p.TotalRating);
+
+        modelBuilder.Entity<ProductRating>()
+                 .HasKey(pr => new { pr.ProductId, pr.UserId });
+
+        modelBuilder.Entity<ProductRating>()
+            .HasOne(pr => pr.Product)
+            .WithMany(p => p.Ratings)
+            .HasForeignKey(pr => pr.ProductId);
+
+        modelBuilder.Entity<ProductRating>()
+            .HasOne(pr => pr.User)
+            .WithMany(u => u.Ratings)
+            .HasForeignKey(pr => pr.UserId);
     }
 }
