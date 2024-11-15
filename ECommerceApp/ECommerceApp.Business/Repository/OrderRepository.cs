@@ -20,8 +20,8 @@ namespace ECommerceApp.Business.Repository
             if (product == null) throw new ArgumentException("Invalid product ID");
 
             var order = await _context.Orders
-                .Include(o => o.Items)
-                .FirstOrDefaultAsync(o => o.UserId == userId && o.Status.ToString() == "Pending");
+                .Include(o => o.Items)  
+                .FirstOrDefaultAsync(o => o.UserId == userId && o.Status == Status.Pending);
 
             if (order == null)
             {
@@ -29,7 +29,7 @@ namespace ECommerceApp.Business.Repository
                 {
                     UserId = userId,
                     CreationDate = DateTime.UtcNow,
-                    Status = Enum.Parse<Status>("Pending")
+                    Status = Status.Pending
                 };
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
@@ -44,8 +44,6 @@ namespace ECommerceApp.Business.Repository
             };
 
             order.Items.Add(orderItem);
-            await _context.SaveChangesAsync();
-
             await _context.SaveChangesAsync();
 
             return new OrderDto
@@ -69,7 +67,7 @@ namespace ECommerceApp.Business.Repository
         public async Task<List<OrderDto>> GetOrdersAsync(Guid userId, int? orderId = null)
         {
             var query = _context.Orders
-                .Include(o => o.Items)
+                .Include(o => o.Items)  
                 .Where(o => o.UserId == userId);
 
             if (orderId.HasValue)
@@ -100,18 +98,22 @@ namespace ECommerceApp.Business.Repository
         public async Task<OrderDto> UpdateOrderAsync(Guid userId, OrderUpdateDto updateDto)
         {
             var order = await _context.Orders
-                .Include(o => o.Items)
+                .Include(o => o.Items)  
                 .FirstOrDefaultAsync(o => o.UserId == userId && o.Id == updateDto.OrderId && o.Status == Status.Pending);
 
             if (order == null)
+            {
                 throw new InvalidOperationException("Order not found or already paid.");
+            }
 
             foreach (var update in updateDto.Updates)
             {
                 var orderItem = order.Items.FirstOrDefault(oi => oi.ProductId == update.ProductId);
 
                 if (orderItem == null)
+                {
                     throw new InvalidOperationException($"Product with ID {update.ProductId} not found in the order.");
+                }
 
                 if (update.NewAmount <= 0)
                 {
@@ -146,33 +148,40 @@ namespace ECommerceApp.Business.Repository
         public async Task RemoveOrderItemsAsync(Guid userId, int orderId, List<int> itemIds)
         {
             var order = await _context.Orders
-                .Include(o => o.Items)
+                .Include(o => o.Items)  
                 .FirstOrDefaultAsync(o => o.UserId == userId && o.Id == orderId && o.Status == Status.Pending);
 
             if (order == null)
+            {
                 throw new InvalidOperationException("Order not found or already paid.");
+            }
 
             var itemsToRemove = order.Items.Where(oi => itemIds.Contains(oi.Id)).ToList();
 
             if (!itemsToRemove.Any())
+            {
                 throw new InvalidOperationException("No matching items found in the order.");
+            }
 
             _context.OrderItems.RemoveRange(itemsToRemove);
 
             await _context.SaveChangesAsync();
         }
 
-
         public async Task CompleteOrderAsync(Guid userId, int orderId)
         {
             var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.UserId == userId && o.Id == orderId && o.Status.ToString() == "Pending");
+                .FirstOrDefaultAsync(o => o.UserId == userId && o.Id == orderId && o.Status == Status.Pending);
 
-            if (order == null) throw new InvalidOperationException("Order not found or already paid");
+            if (order == null)
+            {
+                throw new InvalidOperationException("Order not found or already paid");
+            } 
 
             order.IsPaid = true;
-            order.Status = Enum.Parse<Status>("Complete");
+            order.Status = Status.Completed; 
             await _context.SaveChangesAsync();
         }
     }
 }
+
