@@ -76,6 +76,7 @@ namespace E_commerce_Web_Api
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<ICloudinaryService ,CloudinaryService>();
 
             builder.Services.AddHealthChecks()

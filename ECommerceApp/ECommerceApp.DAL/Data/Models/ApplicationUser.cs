@@ -12,5 +12,6 @@ namespace ECommerceApp.DAL.Data.Models
         public string? AddressDelivery { get; set; }
         public DateTime AccountCreationDate { get; set; }
         public ICollection<ProductRating> Ratings { get; set; }
+        public List<Order> Orders { get; set; } = new List<Order>();
     }
 }

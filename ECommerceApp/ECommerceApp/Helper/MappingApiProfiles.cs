@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ECommerceApp.Business.DTO.Order;
 using ECommerceApp.Business.DTO.Product;
 using ECommerceApp.Business.DTO.ProductRating;
 using ECommerceApp.Business.DTO.User;
@@ -28,6 +29,16 @@ namespace ECommerceApp.Helper
             CreateMap<ProductListRequest, ProductListDto>();
 
             CreateMap<ProductListDto, ProductListResponse>();
+
+            CreateMap<OrderUpdateRequest, OrderUpdateDto>()
+           .ForMember(dest => dest.Updates, opt => opt.MapFrom(src => src.Updates));
+
+            CreateMap<OrderItemUpdateRequest, OrderItemUpdateDto>();
+
+            CreateMap<OrderDto, OrderResponseModel>()
+           .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+
+            CreateMap<OrderItemDto, OrderItemResponseModel>();
         }
     }
 }
